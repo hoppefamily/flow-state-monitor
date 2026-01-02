@@ -65,8 +65,10 @@ def test_detect_abnormal_volatility_high():
 
 def test_detect_abnormal_volatility_normal():
     """Test that normal volatility is not flagged."""
-    # Gradually increasing prices
-    prices = [100.0 + i * 0.5 for i in range(25)]
+    # Prices with normal day-to-day variation (around 1% changes)
+    prices = [100.0, 101.0, 100.5, 101.5, 100.8, 102.0, 101.2, 102.5, 
+              101.8, 103.0, 102.2, 103.5, 102.8, 104.0, 103.2, 104.5,
+              103.8, 105.0, 104.2, 105.5, 104.8, 106.0, 105.2]
     detected, details = detect_abnormal_volatility(prices, lookback_period=20)
     
     assert detected is False
