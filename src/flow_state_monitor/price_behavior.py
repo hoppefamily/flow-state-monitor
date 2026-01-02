@@ -125,15 +125,16 @@ def detect_abnormal_volatility(
     Raises:
         ValueError: If insufficient data
     """
-    if len(prices) < lookback_period + 1:
+    if len(prices) < lookback_period + 2:
         raise ValueError(
-            f"Need at least {lookback_period + 1} prices for volatility analysis"
+            f"Need at least {lookback_period + 2} prices for volatility analysis"
         )
     
     returns = calculate_daily_returns(prices)
     
-    # Get historical returns (excluding most recent)
-    historical_returns = returns[-(lookback_period+1):-1]
+    # Get historical returns (last lookback_period returns, excluding most recent)
+    # With lookback_period returns needed for history, we slice to get exactly those
+    historical_returns = returns[-(lookback_period + 1):-1]
     recent_return = returns[-1]
     
     # Calculate historical volatility
