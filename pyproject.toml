@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flow-state-monitor"
+version = "0.1.0"
+description = "A tool to monitor market flow states driven by borrow-rate dynamics and forced buying pressure"
+readme = "README.md"
+license = {text = "GPL-3.0"}
+authors = [
+    {name = "flow-state-monitor contributors"}
+]
+requires-python = ">=3.8"
+dependencies = [
+    "pyyaml>=6.0",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Office/Business :: Financial",
+]
+
+[project.urls]
+Homepage = "https://github.com/hoppefamily/flow-state-monitor"
+Repository = "https://github.com/hoppefamily/flow-state-monitor"
+
+[project.scripts]
+flow-state-monitor = "flow_state_monitor.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
