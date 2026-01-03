@@ -6,19 +6,20 @@ flow state monitoring system. Configuration can be loaded from YAML files
 or provided programmatically.
 """
 
-import os
 import copy
+import os
 from typing import Any, Dict, Optional
+
 import yaml
 
 
 class Config:
     """
     Configuration manager for flow state monitor.
-    
+
     This class handles loading configuration from YAML files and provides
     default values for all detection parameters.
-    
+
     Attributes:
         borrow_level: Thresholds for borrow rate levels
         borrow_delta: Thresholds for borrow rate changes
@@ -26,7 +27,7 @@ class Config:
         price_behavior: Thresholds for price behavior analysis
         general: General analysis parameters
     """
-    
+
     DEFAULT_CONFIG = {
         "borrow_level": {
             "high_threshold_percent": 10.0,
@@ -38,6 +39,7 @@ class Config:
         },
         "borrow_momentum": {
             "lookback_period": 5,
+            "ema_span": 3,
             "positive_threshold_pct_points": 1.0,
             "negative_threshold_pct_points": -1.0,
         },
@@ -48,28 +50,35 @@ class Config:
         },
         "general": {
             "min_data_points": 6,
+        },
+        "market_state": {
+            "tension_threshold_percent": 5.0,
+        },
+        "signals": {
+            "epsilon": 0.05,
+            "exit_confirmation_days": 1,
         }
     }
-    
+
     def __init__(self, config_path: Optional[str] = None):
         """
         Initialize configuration.
-        
+
         Args:
             config_path: Path to YAML configuration file. If None, uses defaults.
         """
         self.config = copy.deepcopy(self.DEFAULT_CONFIG)
-        
+
         if config_path and os.path.exists(config_path):
             self.load_from_file(config_path)
-    
+
     def load_from_file(self, path: str) -> None:
         """
         Load configuration from YAML file.
-        
+
         Args:
             path: Path to YAML configuration file
-            
+
         Raises:
             FileNotFoundError: If config file doesn't exist
             yaml.YAMLError: If config file is invalid YAML
@@ -78,11 +87,11 @@ class Config:
             user_config = yaml.safe_load(f)
             if user_config:
                 self._merge_config(user_config)
-    
+
     def _merge_config(self, user_config: Dict[str, Any]) -> None:
         """
         Merge user configuration with defaults.
-        
+
         Args:
             user_config: User-provided configuration dictionary
         """
@@ -91,30 +100,30 @@ class Config:
                 self.config[section].update(values)
             else:
                 self.config[section] = values
-    
+
     def get(self, section: str, key: str) -> Any:
         """
         Get configuration value.
-        
+
         Args:
             section: Configuration section name
             key: Configuration key within section
-            
+
         Returns:
             Configuration value
-            
+
         Raises:
             KeyError: If section or key doesn't exist
         """
         return self.config[section][key]
-    
+
     def get_section(self, section: str) -> Dict[str, Any]:
         """
         Get entire configuration section.
-        
+
         Args:
             section: Configuration section name
-            
+
         Returns:
             Dictionary of configuration values for the section
         """

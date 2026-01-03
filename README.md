@@ -14,6 +14,9 @@ A Python tool that monitors market flow states driven by forced buying pressure 
 - **Modular Design**: Each detection method is independent and can be used separately
 - **Config-Driven**: Easily customize detection thresholds via YAML configuration
 - **CLI Support**: Command-line interface for analyzing CSV data files
+- **Ortex Integration**: Fetch borrow rate data directly from Ortex API
+- **IBKR Integration**: Optional support for fetching price data from Interactive Brokers/CapTrader
+- **Complete Solution**: Combine Ortex (borrow rates) + IBKR (prices) for fully automated data fetching
 - **Flow State Output**: Returns ON / WEAKENING / OFF states (not trade signals)
 
 ## Installation
@@ -26,9 +29,14 @@ cd flow-state-monitor
 # Install in development mode
 pip install -e .
 
+# Optional: Install IBKR support for price data
+pip install ib_insync
+
 # Or install with dev dependencies for testing
 pip install -e ".[dev]"
 ```
+
+**Note**: Ortex integration requires no additional packages - just an API key!
 
 ## Quick Start
 
@@ -37,6 +45,18 @@ pip install -e ".[dev]"
 ```bash
 # Analyze data from CSV file
 flow-state-monitor --csv examples/flow_on_example.csv
+
+# Fetch borrow rates from Ortex + prices from CSV
+flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
+
+# Fetch borrow rates from Ortex + prices from IBKR (COMPLETE SOLUTION!)
+flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL --days 30 --port 7497
+
+# Use Ortex demo key for testing
+flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
+
+# Legacy: Fetch prices from IBKR + borrow rates from CSV
+flow-state-monitor --ibkr AAPL --days 30 --port 7497 --borrow-csv borrow_rates.csv
 
 # Use custom configuration
 flow-state-monitor --csv data.csv --config custom_config.yaml
@@ -54,14 +74,14 @@ flow-state-monitor --csv data.csv --borrow-col borrow --price-col price
 FLOW STATE MONITOR - ANALYSIS RESULTS
 ============================================================
 
-⚠️  FLOW STATE: ON - Forced buying pressure is ACTIVE. 
-Borrow rate: 25.2% (HIGH). Pressure indicators suggest 
+⚠️  FLOW STATE: ON - Forced buying pressure is ACTIVE.
+Borrow rate: 25.2% (HIGH). Pressure indicators suggest
 ongoing short covering activity.
 
 ============================================================
 ```
 
-**Exit codes:** 
+**Exit codes:**
 - 0 = OFF (no pressure)
 - 1 = ON (pressure active)
 - 2 = WEAKENING (pressure diminishing)
@@ -172,6 +192,7 @@ flow-state-monitor/
 │       ├── borrow_delta.py      # Borrow rate delta detection
 │       ├── borrow_momentum.py   # Borrow rate momentum detection
 │       ├── price_behavior.py    # Price spike and volatility detection
+│       ├── ibkr_data.py         # Optional IBKR/CapTrader integration
 │       ├── cli.py               # Command-line interface
 │       └── __main__.py          # Module entry point
 ├── tests/                       # Test suite
@@ -183,6 +204,7 @@ flow-state-monitor/
 │   ├── test_config.py
 │   └── conftest.py
 ├── examples/                    # Usage examples
+│   ├── ibkr_usage.py            # IBKR integration examples
 │   ├── flow_on_example.csv
 │   ├── flow_weakening_example.csv
 │   └── flow_off_example.csv
@@ -191,9 +213,116 @@ flow-state-monitor/
 ├── pyproject.toml               # Package configuration
 ├── requirements.txt             # Dependencies
 ├── README.md                    # This file
+├── IBKR_QUICK_REFERENCE.md      # IBKR integration guide
 ├── PHILOSOPHY.md                # Design philosophy
 └── LICENSE                      # GPL-3.0 license
 ```
+
+## IBKR/CapTrader Integration
+
+The flow-state-monitor optionally supports fetching price data from Interactive Brokers or CapTrader.
+
+**Important**: IBKR only provides price data. Borrow rates must come from another source.
+
+### Setup
+
+```bash
+# Install IBKR support
+pip install ib_insync
+
+# Start TWS or IB Gateway and enable API connections
+```
+
+### Python API
+
+```python
+from flow_state_monitor import FlowStateMonitor
+from flow_state_monitor.ibkr_data import fetch_ibkr_data
+
+# Fetch price data from IBKR
+price_data = fetch_ibkr_data('AAPL', days=30, port=7497)
+
+# Get borrow rates from your data source
+borrow_rates = [2.5, 3.0, 5.2, 8.5, ...]  # Your broker/vendor
+
+# Analyze
+monitor = FlowStateMonitor()
+results = monitor.analyze(
+    borrow_rates=borrow_rates,
+    prices=price_data['prices']
+)
+```
+
+### Command Line
+
+```bash
+# Fetch prices from IBKR, borrow rates from CSV
+flow-state-monitor --ibkr AAPL --days 30 --port 7497 --borrow-csv borrow.csv
+```
+
+See [IBKR_QUICK_REFERENCE.md](IBKR_QUICK_REFERENCE.md) for complete setup instructions and examples.
+
+## Ortex Integration
+
+The flow-state-monitor supports fetching borrow rate data from Ortex API. Combined with IBKR for prices, this provides a complete automated solution!
+
+**Sign up**: https://public.ortex.com/
+**Demo Key**: Use `TEST` for testing (limited data)
+
+### Setup
+
+No additional Python packages needed - just get an API key!
+
+### Python API
+
+```python
+from flow_state_monitor import FlowStateMonitor
+from flow_state_monitor.ortex_data import fetch_combined_data
+
+# Fetch BOTH borrow rates (Ortex) and prices (IBKR) - complete solution!
+data = fetch_combined_data(
+    symbol='AAPL',
+    days=30,
+    ortex_api_key='YOUR_KEY',  # or 'TEST' for demo
+    ibkr_port=7497
+)
+
+# Analyze
+monitor = FlowStateMonitor()
+results = monitor.analyze(**data)
+print(results['summary'])
+```
+
+### Or Fetch Only Borrow Rates
+
+```python
+from flow_state_monitor.ortex_data import fetch_ortex_borrow_rates
+
+# Fetch borrow rates from Ortex
+borrow_data = fetch_ortex_borrow_rates('AAPL', days=30, api_key='YOUR_KEY')
+
+# Combine with your price data
+monitor = FlowStateMonitor()
+results = monitor.analyze(
+    borrow_rates=borrow_data['borrow_rates'],
+    prices=your_prices
+)
+```
+
+### Command Line
+
+```bash
+# Complete solution: Ortex + IBKR
+flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL --days 30
+
+# Ortex + CSV prices
+flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
+
+# Using demo key
+flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
+```
+
+See [ORTEX_QUICK_REFERENCE.md](ORTEX_QUICK_REFERENCE.md) for complete setup instructions and examples.
 
 ## Testing
 

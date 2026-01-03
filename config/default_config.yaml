@@ -6,7 +6,7 @@ borrow_level:
   # Threshold for high borrow rate (as percentage)
   # E.g., 10.0 means borrow rate must be >= 10% to indicate forced buying pressure
   high_threshold_percent: 10.0
-  
+
   # Threshold for medium borrow rate (as percentage)
   # E.g., 5.0 means borrow rate between 5-10% indicates potential pressure
   medium_threshold_percent: 5.0
@@ -16,7 +16,7 @@ borrow_delta:
   # Threshold for significant daily increase in borrow rate (percentage points)
   # E.g., 2.0 means increase of 2+ percentage points indicates rising pressure
   increase_threshold_pct_points: 2.0
-  
+
   # Threshold for significant daily decrease in borrow rate (percentage points)
   # E.g., -2.0 means decrease of 2+ percentage points indicates weakening pressure
   decrease_threshold_pct_points: -2.0
@@ -25,11 +25,15 @@ borrow_delta:
 borrow_momentum:
   # Number of days to analyze for momentum calculation
   lookback_period: 5
-  
+
+  # EMA span for smoothing daily deltas (per design specification)
+  # Default: 3, can be set to 5 for more smoothing
+  ema_span: 3
+
   # Threshold for positive momentum (average daily change in percentage points)
   # E.g., 1.0 means average increase of 1+ pct points per day over lookback
   positive_threshold_pct_points: 1.0
-  
+
   # Threshold for negative momentum (average daily change in percentage points)
   # E.g., -1.0 means average decrease of 1+ pct points per day over lookback
   negative_threshold_pct_points: -1.0
@@ -39,10 +43,10 @@ price_behavior:
   # Threshold for significant daily price increase (percentage)
   # E.g., 5.0 means price must increase by 5%+ to indicate buying pressure
   spike_threshold_percent: 5.0
-  
+
   # Lookback period for volatility calculation
   volatility_lookback_period: 20
-  
+
   # Multiplier for abnormal volatility
   # E.g., 2.0 means volatility must be 2x historical average
   volatility_threshold_multiplier: 2.0
@@ -51,3 +55,20 @@ price_behavior:
 general:
   # Minimum number of data points required for analysis
   min_data_points: 6
+
+# Market state detection (per design specification)
+market_state:
+  # Borrow rate threshold for detecting structural tension
+  # When borrow rate exceeds this, market transitions from elastic to constrained
+  tension_threshold_percent: 5.0
+
+# Signal generation (per design specification)
+signals:
+  # Epsilon: deadband for exit signal detection
+  # Exit triggered when EMA(ΔB) < -epsilon
+  # Default: 0.05 percentage points per day
+  epsilon: 0.05
+
+  # Confirmation period for exit signal (trading days)
+  # Exit signal must persist for this many days
+  exit_confirmation_days: 1
