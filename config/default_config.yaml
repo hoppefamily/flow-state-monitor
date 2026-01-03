@@ -26,7 +26,7 @@ borrow_momentum:
   # Number of days to analyze for momentum calculation
   lookback_period: 5
 
-  # EMA span for smoothing daily deltas (per COPILOT_SPEC.md)
+  # EMA span for smoothing daily deltas (per design specification)
   # Default: 3, can be set to 5 for more smoothing
   ema_span: 3
 
@@ -56,13 +56,13 @@ general:
   # Minimum number of data points required for analysis
   min_data_points: 6
 
-# Market state detection (per COPILOT_SPEC.md)
+# Market state detection (per design specification)
 market_state:
   # Borrow rate threshold for detecting structural tension
   # When borrow rate exceeds this, market transitions from elastic to constrained
   tension_threshold_percent: 5.0
 
-# Signal generation (per COPILOT_SPEC.md)
+# Signal generation (per design specification)
 signals:
   # Epsilon: deadband for exit signal detection
   # Exit triggered when EMA(ΔB) < -epsilon

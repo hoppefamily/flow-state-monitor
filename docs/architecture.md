@@ -1,8 +1,8 @@
-# COPILOT_SPEC.md Implementation Complete
+# Architecture Documentation
 
 ## Summary
 
-The flow-state-monitor has been successfully updated to implement all requirements from COPILOT_SPEC.md:
+The flow-state-monitor has been successfully updated to implement all requirements from the design specification (see [design_specification.md](design_specification.md)):
 
 ## ✓ Implemented Features
 
@@ -29,7 +29,7 @@ The flow-state-monitor has been successfully updated to implement all requiremen
 - Implemented in: `src/flow_state_monitor/signals.py`
 - Tracks state transitions across time
 
-### 5. Output Format (per COPILOT_SPEC.md)
+### 5. Output Format (per Design Specification)
 - market_state (ON/OFF)
 - flow_state (ON/WEAKENING/OFF)
 - borrow_rate level
@@ -100,7 +100,7 @@ flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
 
 ```
 ============================================================
-FLOW STATE MONITOR - ANALYSIS (per COPILOT_SPEC.md)
+FLOW STATE MONITOR - ANALYSIS
 ============================================================
 
 MARKET STATE: ON
@@ -145,7 +145,7 @@ python test_buy_signal.py       # BUY signal test
 
 ## Exit Strategy
 
-Important: Per COPILOT_SPEC.md, exit is:
+Important: Per the design specification, exit is:
 - **NOT** price-based
 - **NOT** flow_state-based
 - **NOT** waiting for price reversal

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Comprehensive demonstration of COPILOT_SPEC.md implementation.
+Comprehensive demonstration of the design specification implementation.
 
 This example shows:
 1. Market state detection (elastic vs constrained)
@@ -13,7 +13,7 @@ This example shows:
 from flow_state_monitor import FlowStateMonitor
 
 print("=" * 70)
-print("COPILOT_SPEC.md IMPLEMENTATION DEMONSTRATION")
+print("DESIGN SPECIFICATION IMPLEMENTATION DEMONSTRATION")
 print("=" * 70)
 print()
 

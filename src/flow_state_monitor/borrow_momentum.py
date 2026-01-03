@@ -4,7 +4,7 @@ Borrow rate momentum detection module.
 This module provides functionality to detect momentum in borrow rate changes
 over a period of time, indicating sustained pressure trends.
 
-Uses EMA (Exponential Moving Average) on daily deltas as specified in COPILOT_SPEC.md.
+Uses EMA (Exponential Moving Average) on daily deltas as specified in the design specification.
 """
 
 from typing import List, Tuple
@@ -40,7 +40,7 @@ def calculate_momentum(borrow_rates: List[float], ema_span: int = 3) -> float:
     """
     Calculate borrow rate momentum using EMA of daily deltas.
 
-    Per COPILOT_SPEC.md:
+    Per design specification:
     - ΔB(t) = borrow_rate(t) - borrow_rate(t-1)
     - Momentum = EMA(ΔB)
 

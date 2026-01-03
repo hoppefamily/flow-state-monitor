@@ -1,7 +1,7 @@
 """
 Signal generation module for entry/exit decisions.
 
-Per COPILOT_SPEC.md:
+Per design specification (docs/design_specification.md):
 - Entry (BUY): Both market_state and flow_state flip from OFF to ON within 0-1 days
 - Exit (SELL): EMA(ΔB) < -epsilon for 1 full trading day
 - Otherwise: HOLD
@@ -17,7 +17,7 @@ class SignalGenerator:
     Generates BUY/SELL/HOLD signals based on state transitions.
 
     Tracks historical states to detect transitions and generate signals
-    according to COPILOT_SPEC.md rules.
+    according to the design specification rules.
     """
 
     def __init__(self, epsilon: float = 0.05):

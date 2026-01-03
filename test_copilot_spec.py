@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-Test script for COPILOT_SPEC.md implementation.
+Test script for design specification implementation.
 
 Tests the new features:
 - EMA-based momentum

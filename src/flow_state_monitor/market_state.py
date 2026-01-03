@@ -4,7 +4,7 @@ Market state detection module.
 This module detects whether the market is in an elastic state (normal) or
 has broken elasticity (structural tension exists).
 
-Per COPILOT_SPEC.md:
+Per design specification (docs/design_specification.md):
 - market_state OFF = market is elastic, no constraint
 - market_state ON = elasticity broken (structural tension exists)
 """

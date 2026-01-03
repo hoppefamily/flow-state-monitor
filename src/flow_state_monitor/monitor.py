@@ -4,7 +4,7 @@ Main flow state monitor module.
 This module integrates borrow-rate dynamics and price behavior analysis to
 detect market flow states driven by forced buying pressure.
 
-Implements COPILOT_SPEC.md:
+Implements design specification (docs/design_specification.md):
 - Detects market_state (elastic vs constrained)
 - Detects flow_state (forced buying pressure)
 - Generates BUY/SELL/HOLD signals based on state transitions
@@ -25,7 +25,7 @@ class FlowStateMonitor:
     """
     Monitor market flow states driven by forced buying pressure.
 
-    Implements COPILOT_SPEC.md:
+    Implements design specification (docs/design_specification.md):
     - market_state: Detects elastic vs constrained market conditions
     - flow_state: Detects forced buying pressure (ON/WEAKENING/OFF)
     - Generates BUY/SELL/HOLD signals based on state transitions
@@ -35,7 +35,7 @@ class FlowStateMonitor:
         - WEAKENING: Pressure exists but is diminishing (high rates but falling)
         - OFF: No significant forced buying pressure detected
 
-    Market states (per COPILOT_SPEC.md):
+    Market states (per design specification):
         - ON: Market elasticity broken - structural tension exists
         - OFF: Market is elastic - no constraint
 
@@ -73,7 +73,7 @@ class FlowStateMonitor:
         """
         Analyze market data to detect flow state and generate signals.
 
-        Implements COPILOT_SPEC.md output requirements:
+        Implements design specification output requirements:
         - market_state (ON/OFF)
         - flow_state (ON/WEAKENING/OFF)
         - borrow_rate level
@@ -109,7 +109,7 @@ class FlowStateMonitor:
 
         signals = {}
 
-        # Detect market state (per COPILOT_SPEC.md)
+        # Detect market state (per design specification)
         try:
             market_config = self.config.get_section("market_state")
             market_state, market_details = detect_market_state(
@@ -165,7 +165,7 @@ class FlowStateMonitor:
                 "error": str(e)
             }
 
-        # Analyze borrow rate momentum (EMA-based per COPILOT_SPEC.md)
+        # Analyze borrow rate momentum (EMA-based per design specification)
         try:
             momentum_config = self.config.get_section("borrow_momentum")
             lookback = momentum_config["lookback_period"]
@@ -310,7 +310,7 @@ class FlowStateMonitor:
         signals: Dict
     ) -> str:
         """
-        Generate human-readable summary per COPILOT_SPEC.md output requirements.
+        Generate human-readable summary per design specification output requirements.
 
         Must include:
         - market_state (ON/OFF)
@@ -341,10 +341,10 @@ class FlowStateMonitor:
         momentum = momentum_details.get("momentum", 0)
         ema_span = momentum_details.get("ema_span", 3)
 
-        # Build summary per COPILOT_SPEC.md format
+        # Build summary per design specification format
         lines = []
         lines.append("=" * 60)
-        lines.append("FLOW STATE MONITOR - ANALYSIS (per COPILOT_SPEC.md)")
+        lines.append("FLOW STATE MONITOR - ANALYSIS")
         lines.append("=" * 60)
         lines.append("")
 
