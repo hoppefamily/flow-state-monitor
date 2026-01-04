@@ -470,8 +470,21 @@ Environment Variables:
 
             # Add relative strength analysis if available
             if relative_strength:
-                from .market_context import format_relative_strength
+                from .market_context import (
+                    check_narrative_boundary,
+                    format_relative_strength,
+                )
                 print(format_relative_strength(relative_strength, results["flow_state"]))
+
+                # Check if we're at the boundary between money flow and narrative domains
+                borrow_rate = data["borrow_rates"][-1] if data["borrow_rates"] else 0.0
+                boundary_hint = check_narrative_boundary(
+                    relative_strength,
+                    results["flow_state"],
+                    borrow_rate
+                )
+                if boundary_hint:
+                    print(boundary_hint)
 
         # Exit with appropriate code based on signal
         # 0 = HOLD/OFF, 1 = BUY, 2 = SELL

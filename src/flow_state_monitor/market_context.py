@@ -220,3 +220,33 @@ def format_relative_strength(rs: RelativeStrength, flow_state: str) -> str:
     lines.append("="*60)
 
     return "\n".join(lines)
+
+
+def check_narrative_boundary(rs: RelativeStrength, flow_state: str, borrow_rate: float) -> str:
+    """
+    Check if we're at the boundary between money flow and narrative domains.
+
+    Args:
+        rs: RelativeStrength object
+        flow_state: Current flow state ('ON', 'OFF', 'WEAKENING', etc.)
+        borrow_rate: Current borrow rate percentage
+
+    Returns:
+        Hint message if at boundary, empty string otherwise
+    """
+    # Only show hint for Flow OFF with low borrow rate and significant movement
+    if flow_state != 'OFF' or borrow_rate >= 5.0:
+        return ""
+
+    # Check for significant price movement or relative performance divergence
+    significant_move = abs(rs.stock_return) > 5.0
+    significant_divergence = abs(rs.spy_relative) > 3.0 or (rs.qqq_relative and abs(rs.qqq_relative) > 3.0)
+
+    if significant_move or significant_divergence:
+        return (
+            "\n💭 HINT: Significant price movement without flow pressure detected.\n"
+            "    Consider narrative analysis for non-mechanical drivers.\n"
+            "    See docs/money_flow_vs_narrative.md for more info."
+        )
+
+    return ""

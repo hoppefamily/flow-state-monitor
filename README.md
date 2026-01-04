@@ -21,6 +21,19 @@ A Python tool that monitors market flow states driven by forced buying pressure 
 - **Relative Strength Analysis**: Compare stock performance against SPY and QQQ benchmarks to validate signals
 - **Flow State Output**: Returns ON / WEAKENING / OFF states (not trade signals)
 
+## Understanding the Tool's Domain
+
+flow-state-monitor operates in the **Money Flow Domain** - it detects price movements driven by mechanical constraints (short covering pressure). It works best for stocks with significant short interest and rising borrow rates.
+
+**When flow-state-monitor shows limitations:**
+- Stocks with major narrative events (leadership changes, strategic pivots)
+- Low short interest stocks with big moves
+- Sentiment-driven volatility
+
+**Example:** Berkshire Hathaway (BRK.B) during Buffett succession discussions shows Flow OFF (correct - no shorts) but underperforms due to narrative uncertainty. This is outside the money flow domain.
+
+📖 **See [Money Flow vs Narrative Flow](docs/money_flow_vs_narrative.md) for detailed explanation of when to use this tool vs. narrative analysis tools.**
+
 ## Installation
 
 ```bash
