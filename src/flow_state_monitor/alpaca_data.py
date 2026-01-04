@@ -57,11 +57,10 @@ class AlpacaDataFetcher:
         Args:
             api_key: Alpaca API key (or set ALPACA_API_KEY environment variable)
             secret_key: Alpaca secret key (or set ALPACA_SECRET_KEY environment variable)
-            paper: Paper trading indicator (default: True). Note: This parameter
-                   is kept for API consistency but does not affect data fetching.
-                   Historical data access uses the same endpoint for both paper
-                   and live keys. The paper/live distinction matters only for
-                   trading operations.
+            paper: Kept only for API consistency (default: True). This parameter
+                   does not affect data fetching; historical data access uses the
+                   same endpoint for both paper and live keys. The paper/live
+                   distinction matters only for trading operations.
 
         Note:
             Paper trading is recommended for testing and development.
@@ -102,13 +101,17 @@ class AlpacaDataFetcher:
             )
 
         # Check for common forex currency codes (6 chars like EURUSD)
+        # Only flag if BOTH parts are valid currency codes to avoid false positives
         if len(symbol_upper) == 6 and symbol_upper.isalpha():
             common_currencies = ['EUR', 'GBP', 'JPY', 'CHF', 'AUD', 'CAD', 'NZD', 'USD']
             first_three = symbol_upper[:3]
             last_three = symbol_upper[3:]
-            if first_three in common_currencies and last_three in common_currencies:
+            # Both parts must be currencies AND different to be a forex pair
+            if (first_three in common_currencies and 
+                last_three in common_currencies and 
+                first_three != last_three):
                 raise ValueError(
-                    f"Symbol '{symbol}' appears to be a forex pair. "
+                    f"Symbol '{symbol}' appears to be a forex pair ({first_three}/{last_three}). "
                     f"Alpaca only supports US equities."
                 )
 
@@ -224,7 +227,12 @@ class AlpacaDataFetcher:
         elif hasattr(bars_response, symbol_key):
             bars = getattr(bars_response, symbol_key)
 
-        if not bars:
+        if bars is None:
+            raise ValueError(
+                f"Unexpected response format when fetching data for '{symbol}'. "
+                f"Unable to locate bar data for symbol key '{symbol_key}'."
+            )
+        elif not bars:
             raise ValueError(
                 f"No data returned for '{symbol}'. "
                 f"Check that the symbol is valid and has trading data."

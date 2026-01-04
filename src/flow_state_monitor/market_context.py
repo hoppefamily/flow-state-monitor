@@ -69,6 +69,10 @@ class MarketContextAnalyzer:
             logger.debug(f"Invalid start price: {start_price}")
             return None
 
+        if end_price <= 0:
+            logger.debug(f"Invalid end_price: {end_price}")
+            return None
+
         return_pct = ((end_price - start_price) / start_price) * 100
         logger.debug(f"Calculated return: {return_pct:.2f}% (from {start_price:.2f} to {end_price:.2f})")
         return return_pct

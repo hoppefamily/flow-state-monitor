@@ -279,13 +279,21 @@ Environment Variables:
         # Default mode: need Alpaca credentials
         if not alpaca_api_key or not alpaca_secret_key:
             parser.error(
-                "Alpaca credentials required (default price source).\n"
-                "Option 1: Set environment variables:\n"
+                "Alpaca credentials not found (default price source).\n"
+                "\n"
+                "Option 1: Set environment variables (before running command):\n"
                 "  export ALPACA_API_KEY=your_key\n"
                 "  export ALPACA_SECRET_KEY=your_secret\n"
-                "  (Get free keys from https://alpaca.markets/)\n"
-                "Option 2: Use CSV for prices: --price-csv FILE\n"
-                "Option 3: Use IBKR instead: --use-ibkr\n"
+                "  Get free keys from https://alpaca.markets/\n"
+                "\n"
+                "Option 2: Pass credentials via command-line arguments:\n"
+                "  flow-state-monitor AAPL --alpaca-api-key KEY --alpaca-secret-key SECRET\n"
+                "\n"
+                "Option 3: Use CSV for prices:\n"
+                "  flow-state-monitor AAPL --price-csv FILE\n"
+                "\n"
+                "Option 4: Use IBKR instead:\n"
+                "  flow-state-monitor AAPL --use-ibkr\n"
                 "  (Requires: pip install ib_insync)"
             )
         # Check if alpaca-py is installed
@@ -398,6 +406,7 @@ Environment Variables:
 
         # Fetch benchmark data for relative strength analysis (if using live data)
         relative_strength = None
+        fetcher = None
         if has_symbol and not args.price_csv:
             try:
                 if not args.json:
@@ -412,7 +421,9 @@ Environment Variables:
                     with IBKRDataFetcher(port=ibkr_port, host=ibkr_host, client_id=args.client_id) as fetcher:
                         benchmark_prices = analyzer.get_benchmark_prices(fetcher, days=args.days)
                 else:
-                    # Default: Alpaca
+                    # Default: Alpaca - create single fetcher for both stock and benchmark data
+                    # Note: Stock data was already fetched via fetch_combined_data above
+                    # This fetcher is only used for benchmark data
                     from .alpaca_data import AlpacaDataFetcher
                     with AlpacaDataFetcher(api_key=alpaca_api_key, secret_key=alpaca_secret_key, paper=True) as fetcher:
                         benchmark_prices = analyzer.get_benchmark_prices(fetcher, days=args.days)
