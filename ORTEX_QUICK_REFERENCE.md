@@ -2,7 +2,7 @@
 
 ## Overview
 
-Ortex provides borrow rate and short interest data. Combined with IBKR price data, this gives you everything needed for complete flow state monitoring.
+Ortex provides borrow rate and short interest data. Combined with Alpaca price data (or IBKR), this gives you everything needed for complete flow state monitoring with automatic relative strength analysis against SPY and QQQ benchmarks.
 
 ## Installation
 
@@ -10,7 +10,10 @@ Ortex provides borrow rate and short interest data. Combined with IBKR price dat
 # Core package (no extra dependencies needed for Ortex)
 pip install -e .
 
-# Optional: For complete solution with IBKR prices
+# Recommended: For complete solution with Alpaca prices
+pip install alpaca-py
+
+# Alternative: For IBKR prices instead
 pip install ib_insync
 ```
 
@@ -18,9 +21,27 @@ pip install ib_insync
 
 1. Sign up at https://public.ortex.com/
 2. Get your API key from account settings
-3. Use `TEST` for demo/testing (limited data)
+3. Set environment variable: `export ORTEX_API_KEY=your_key_here`
+4. Set Alpaca credentials: `export ALPACA_API_KEY=...` and `export ALPACA_SECRET_KEY=...`
+5. Use `TEST` for demo/testing (limited data)
 
 ## Quick Start
+
+### Environment Setup (Recommended)
+
+```bash
+# Set environment variables
+export ORTEX_API_KEY=your_api_key_here
+export ALPACA_API_KEY=your_alpaca_key
+export ALPACA_SECRET_KEY=your_alpaca_secret
+
+# Or create .env file
+cat > .env << EOF
+ORTEX_API_KEY=your_api_key_here
+ALPACA_API_KEY=your_alpaca_key
+ALPACA_SECRET_KEY=your_alpaca_secret
+EOF
+```
 
 ### Fetch Borrow Rates Only
 
@@ -32,17 +53,38 @@ borrow_data = fetch_ortex_borrow_rates('AAPL', days=30, api_key='TEST')
 # Returns: {'borrow_rates': [2.5, 3.0, 5.2, ...]}
 ```
 
-### Complete Analysis with IBKR Prices
+### Complete Analysis with Alpaca Prices (Recommended)
 
 ```python
-from flow_state_monitor.ortex_data import fetch_combined_data
+from flow_state_monitor.alpaca_data import fetch_combined_data
+from flow_state_monitor import FlowStateMonitor
+
+# Fetch both borrow rates from Ortex and prices from Alpaca
+data = fetch_combined_data(
+    symbol='AAPL',
+    days=30,
+    ortex_api_key='YOUR_KEY',  # or 'TEST' for demo
+    alpaca_api_key='YOUR_ALPACA_KEY',
+    alpaca_secret_key='YOUR_ALPACA_SECRET'
+)
+
+# Analyze
+monitor = FlowStateMonitor()
+results = monitor.analyze(**data)
+print(results['summary'])
+```
+
+### Alternative: With IBKR Prices
+
+```python
+from flow_state_monitor.ibkr_data import fetch_combined_data
 from flow_state_monitor import FlowStateMonitor
 
 # Fetch both borrow rates and prices
 data = fetch_combined_data(
     symbol='AAPL',
     days=30,
-    ortex_api_key='YOUR_KEY',  # or 'TEST' for demo
+    ortex_api_key='YOUR_KEY',
     ibkr_port=7497
 )
 
@@ -74,28 +116,50 @@ results = monitor.analyze(
 
 ## Command Line Usage
 
+### Default Mode (Ortex + Alpaca)
+
+```bash
+# Uses ORTEX_API_KEY, ALPACA_API_KEY, and ALPACA_SECRET_KEY from environment
+# Automatically includes relative strength analysis against SPY and QQQ
+flow-state-monitor AAPL
+
+# With explicit days
+flow-state-monitor AAPL --days 30
+
+# Output includes:
+# - Flow state analysis (ON/OFF/WEAKENING)
+# - Relative strength vs SPY (S&P 500)
+# - Relative strength vs QQQ (Nasdaq-100)
+# - Warnings if flow is ON but stock underperforms benchmarks
+```
+
 ### Ortex + CSV Prices
 
 ```bash
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
+# Uses ORTEX_API_KEY from environment
+flow-state-monitor AAPL --price-csv prices.csv
+
+# Override API key
+flow-state-monitor AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
 ```
 
-### Ortex + IBKR (Complete Solution!)
+### Using IBKR Instead of Alpaca
 
 ```bash
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL --days 30 --port 7497
+# Uses ORTEX_API_KEY from environment, IBKR for prices
+flow-state-monitor AAPL --use-ibkr
 ```
 
 ### Using Demo Key
 
 ```bash
-flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
+flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
 ```
 
 ### JSON Output
 
 ```bash
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv --json
+flow-state-monitor AAPL --json
 ```
 
 ## Data Combinations
