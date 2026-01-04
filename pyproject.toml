@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "flow-state-monitor"
 version = "0.1.0"
-description = "A tool to monitor market flow states driven by borrow-rate dynamics and forced buying pressure"
+description = "A tool to monitor flow states in financial markets"
 readme = "README.md"
 license = {text = "GPL-3.0"}
 authors = [
@@ -42,4 +42,10 @@ where = ["src"]
 dev = [
     "pytest>=7.0",
     "pytest-cov>=4.0",
+]
+ibkr = [
+    "ib_insync>=0.9.86",
+]
+alpaca = [
+    "alpaca-py>=0.17.0",
 ]
