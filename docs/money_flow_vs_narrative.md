@@ -37,11 +37,11 @@ MONEY FLOW DOMAIN          |  NARRATIVE FLOW DOMAIN
 ### Perfect Example: Berkshire Hathaway (BRK.B)
 
 ```bash
-$ flow-state-monitor BRK.B
+$ flow-state-monitor BRK.B  # Using real Ortex API key
 
 MARKET STATE: OFF
 FLOW STATE: OFF
-BORROW RATE: 3.10% (LOW)
+BORROW RATE: <5% (CONSISTENTLY LOW)
 
 RELATIVE STRENGTH:
 BRK.B: -2.84%
@@ -49,16 +49,19 @@ vs SPY: underperforming by -3.38%
 vs QQQ: underperforming by -2.64%
 ```
 
+**⚠️ Note:** The example above shows expected behavior with **real Ortex data**. The `ORTEX_API_KEY=TEST` demo key returns **synthetic data** and may incorrectly show Flow ON for BRK.B. In reality, Berkshire **never** has significant short interest or borrow pressure.
+
 **Analysis:**
 - ✅ **Correctly identifies**: No money flow pressure (low borrow rate, no shorts)
 - ✅ **Shows underperformance**: Stock is weak vs. benchmarks
 - ⚠️ **Misses the story**: Warren Buffett succession/transition narrative
 
-**Why this happens:**
-1. **No one shorts Berkshire** - It's institutional-grade, Buffett's reputation
-2. **But massive narrative** - Succession is a fundamental regime change
-3. **Volatility without mechanical pressure** - Pure sentiment/positioning
-4. **flow-state-monitor correctly says "not my domain"**
+**Why BRK.B is the perfect boundary example:**
+1. **No one shorts Berkshire** - It's institutional-grade, Warren Buffett's reputation
+2. **Always Flow OFF** - Consistently low borrow rates, no mechanical pressure
+3. **But can have significant moves** - Succession narrative, strategic shifts, value rotation
+4. **Pure narrative domain** - Any volatility is sentiment/story-driven, not mechanically-forced
+5. **flow-state-monitor correctly says "not my domain"**
 
 **What's actually happening:**
 - Market is repricing based on **uncertainty** about post-Buffett era
