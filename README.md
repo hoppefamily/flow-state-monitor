@@ -15,9 +15,24 @@ A Python tool that monitors market flow states driven by forced buying pressure 
 - **Config-Driven**: Easily customize detection thresholds via YAML configuration
 - **CLI Support**: Command-line interface for analyzing CSV data files
 - **Ortex Integration**: Fetch borrow rate data directly from Ortex API
+- **Alpaca Integration**: Fetch price data from Alpaca Markets (default, easier than IBKR)
 - **IBKR Integration**: Optional support for fetching price data from Interactive Brokers/CapTrader
-- **Complete Solution**: Combine Ortex (borrow rates) + IBKR (prices) for fully automated data fetching
+- **Complete Solution**: Combine Ortex (borrow rates) + Alpaca (prices) for fully automated data fetching
+- **Relative Strength Analysis**: Compare stock performance against SPY and QQQ benchmarks to validate signals
 - **Flow State Output**: Returns ON / WEAKENING / OFF states (not trade signals)
+
+## Understanding the Tool's Domain
+
+flow-state-monitor operates in the **Money Flow Domain** - it detects price movements driven by mechanical constraints (short covering pressure). It works best for stocks with significant short interest and rising borrow rates.
+
+**When flow-state-monitor shows limitations:**
+- Stocks with major narrative events (leadership changes, strategic pivots)
+- Low short interest stocks with big moves
+- Sentiment-driven volatility
+
+**Example:** Berkshire Hathaway (BRK.B) during Buffett succession discussions shows Flow OFF (correct - no shorts) but underperforms due to narrative uncertainty. This is outside the money flow domain.
+
+📖 **See [Money Flow vs Narrative Flow](docs/money_flow_vs_narrative.md) for detailed explanation of when to use this tool vs. narrative analysis tools.**
 
 ## Installation
 
@@ -26,10 +41,17 @@ A Python tool that monitors market flow states driven by forced buying pressure 
 git clone https://github.com/hoppefamily/flow-state-monitor.git
 cd flow-state-monitor
 
+# Create and activate virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate
+
 # Install in development mode
 pip install -e .
 
-# Optional: Install IBKR support for price data
+# Install Alpaca support for price data (recommended)
+pip install alpaca-py
+
+# Optional: Install IBKR support for price data (alternative)
 pip install ib_insync
 
 # Or install with dev dependencies for testing
@@ -37,34 +59,60 @@ pip install -e ".[dev]"
 ```
 
 **Note**: Ortex integration requires no additional packages - just an API key!
+**Note**: Alpaca is the recommended price data source (easier setup than IBKR).
 
 ## Quick Start
+
+### Environment Setup
+
+Create a `.env` file or set environment variables:
+
+```bash
+# Ortex API key (get from https://public.ortex.com/, use 'TEST' for demo)
+export ORTEX_API_KEY=your_api_key_here
+
+# Alpaca API credentials (get free keys from https://alpaca.markets/)
+export ALPACA_API_KEY=your_alpaca_key
+export ALPACA_SECRET_KEY=your_alpaca_secret
+
+# Optional: IBKR configuration (only if using --use-ibkr)
+export IBKR_PORT=7497
+export IBKR_HOST=127.0.0.1
+```
+
+See [.env.example](.env.example) for a template.
 
 ### Command Line
 
 ```bash
+# Default mode: Fetch from Ortex + Alpaca (easiest!)
+flow-state-monitor AAPL
+
+# With explicit days parameter
+flow-state-monitor AAPL --days 30
+
+# Use IBKR instead of Alpaca for prices
+flow-state-monitor AAPL --use-ibkr
+
 # Analyze data from CSV file
 flow-state-monitor --csv examples/flow_on_example.csv
 
-# Fetch borrow rates from Ortex + prices from CSV
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
+# Fetch borrow rates from Ortex + prices from CSV (no relative strength)
+flow-state-monitor AAPL --price-csv prices.csv
 
-# Fetch borrow rates from Ortex + prices from IBKR (COMPLETE SOLUTION!)
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL --days 30 --port 7497
+# Override API keys from environment
+flow-state-monitor AAPL --ortex-api-key YOUR_KEY --alpaca-api-key YOUR_KEY
 
 # Use Ortex demo key for testing
-flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
-
-# Legacy: Fetch prices from IBKR + borrow rates from CSV
-flow-state-monitor --ibkr AAPL --days 30 --port 7497 --borrow-csv borrow_rates.csv
+flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
 
 # Use custom configuration
-flow-state-monitor --csv data.csv --config custom_config.yaml
+flow-state-monitor AAPL --config custom_config.yaml
 
 # Get JSON output for scripting
-flow-state-monitor --csv data.csv --json
+flow-state-monitor AAPL --json
 
-# Specify custom column names
+# Specify custom column names (for CSV mode)
 flow-state-monitor --csv data.csv --borrow-col borrow --price-col price
 ```
 
@@ -79,7 +127,15 @@ Borrow rate: 25.2% (HIGH). Pressure indicators suggest
 ongoing short covering activity.
 
 ============================================================
+
+============================================================
+RELATIVE STRENGTH ANALYSIS
+============================================================
+AAPL: +15.25% | vs SPY (+8.45%): outperforming by +6.80% | vs QQQ (+10.22%): outperforming by +5.03%
+============================================================
 ```
+
+**Note**: When using live data sources (Ortex + Alpaca/IBKR), relative strength analysis is automatically included. It compares the stock's performance against SPY (S&P 500) and QQQ (Nasdaq-100) benchmarks to help validate the flow signal. A strong flow signal with underperformance vs benchmarks may indicate a weak or false signal. Relative strength is not available when using CSV files for price data.
 
 **Exit codes:**
 - 0 = OFF (no pressure)
@@ -312,14 +368,17 @@ results = monitor.analyze(
 ### Command Line
 
 ```bash
-# Complete solution: Ortex + IBKR
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL --days 30
+# Default mode: Ortex + Alpaca (uses env vars)
+flow-state-monitor AAPL --days 30
+
+# Override API keys
+flow-state-monitor AAPL --ortex-api-key YOUR_KEY --alpaca-api-key YOUR_KEY
 
 # Ortex + CSV prices
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --price-csv prices.csv
+flow-state-monitor AAPL --price-csv prices.csv
 
 # Using demo key
-flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
+flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
 ```
 
 See [ORTEX_QUICK_REFERENCE.md](ORTEX_QUICK_REFERENCE.md) for complete setup instructions and examples.
