@@ -33,8 +33,7 @@ jobs:
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
-        TWINE_REPOSITORY_URL: https://upload.pypi.org/legacy/
       run: |
         # Publish to GitHub Packages Python registry
-        # Installation: pip install --index-url https://pip.pkg.github.com/hoppefamily flow-state-monitor
-        python -m twine upload dist/*
+        # Upload URL pattern for GitHub Packages
+        python -m twine upload --repository-url https://pip.pkg.github.com/hoppefamily dist/*
