@@ -38,22 +38,17 @@ flow-state-monitor operates in the **Money Flow Domain** - it detects price move
 
 ### As a Package (For Consumers)
 
-**This is a private package.** Install from GitHub Packages:
+**This is a private repo.** The recommended install method is via git (pinned to a tag):
 
 ```bash
-# Install from GitHub Packages
-pip install flow-state-monitor --extra-index-url https://pip.pkg.github.com/hoppefamily
+# Recommended: install a tagged version
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 
-# Install specific version
-pip install flow-state-monitor==0.1.0 --extra-index-url https://pip.pkg.github.com/hoppefamily
-
-# With optional dependencies
-pip install flow-state-monitor[alpaca] --extra-index-url https://pip.pkg.github.com/hoppefamily
+# Development only: track main
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
 ```
 
-📦 **Requires authentication setup** - See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md)
-
-📖 **See [PACKAGE_INSTALLATION.md](PACKAGE_INSTALLATION.md) for detailed installation instructions, including CI/CD setup.**
+📖 See [PACKAGE_INSTALLATION.md](PACKAGE_INSTALLATION.md) for `requirements.txt` and CI/CD examples.
 
 ### For Development
 

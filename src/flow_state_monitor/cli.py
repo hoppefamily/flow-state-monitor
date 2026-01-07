@@ -97,11 +97,11 @@ def load_csv_data(
 def main():
     """Main CLI entry point."""
     parser = argparse.ArgumentParser(
-        description="Monitor market flow states driven by forced buying pressure (uses Ortex + Alpaca by default).",
+                description="Monitor market flow states driven by forced buying pressure (uses IBKR Borrow Sensor + Alpaca by default).",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  # Fetch borrow rates from Ortex and prices from Alpaca (default mode)
+    # Fetch borrow rates from IBKR Borrow Sensor snapshots and prices from Alpaca (default mode)
   flow-state-monitor AAPL
 
   # Same as above with explicit days parameter
@@ -110,17 +110,11 @@ Examples:
   # Analyze data from CSV file
   flow-state-monitor --csv data.csv
 
-  # Fetch borrow rates from Ortex with prices from CSV
+    # Fetch borrow rates from IBKR Borrow Sensor snapshots with prices from CSV
   flow-state-monitor AAPL --price-csv prices.csv
-
-  # Override API keys from environment
-  flow-state-monitor AAPL --ortex-api-key YOUR_KEY --alpaca-api-key YOUR_KEY
 
   # Use IBKR instead of Alpaca for prices
   flow-state-monitor AAPL --use-ibkr
-
-  # Use Ortex demo key for testing
-  flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
 
   # Use custom config file
   flow-state-monitor AAPL --config custom_config.yaml
@@ -132,13 +126,13 @@ Note: This tool monitors flow states to support disciplined exits.
       It is NOT a trading signal or prediction tool.
 
 Data Sources:
-  - Ortex: Provides borrow rate data (default, requires ORTEX_API_KEY env var)
+    - IBKR Borrow Sensor: Provides borrow rate data via local JSON snapshots (default)
   - Alpaca: Provides price data (default, requires ALPACA_API_KEY and ALPACA_SECRET_KEY env vars)
   - IBKR: Alternative price source (use --use-ibkr flag)
   - CSV: Provides any data from file
 
 Environment Variables:
-  - ORTEX_API_KEY: Ortex API key (use 'TEST' for demo)
+    - IBKR_SNAPSHOT_DIR: Directory containing ibkr-borrow-sensor JSON snapshots (default: ./output)
   - ALPACA_API_KEY: Alpaca API key (get from alpaca.markets)
   - ALPACA_SECRET_KEY: Alpaca secret key
   - IBKR_PORT: IBKR TWS/Gateway port (default: 7497)

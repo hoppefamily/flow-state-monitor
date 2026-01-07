@@ -1,6 +1,7 @@
-# GitHub Packages Authentication Setup
+# Git Authentication Setup (Private Repo)
 
-To install packages from GitHub Packages, you need to authenticate with a Personal Access Token.
+flow-state-monitor is consumed via `pip` VCS installs (git URLs), not via a package registry.
+This document explains how to authenticate to GitHub so `pip install "flow-state-monitor @ git+https://..."` works.
 
 ## Creating a Personal Access Token
 
@@ -13,79 +14,28 @@ To install packages from GitHub Packages, you need to authenticate with a Person
 5. Click "Generate token"
 6. **Copy the token immediately** (you won't see it again!)
 
-## Configure pip for GitHub Packages
-
-Create or edit `~/.netrc` file:
-
-```bash
-cat >> ~/.netrc << EOF
-machine pip.pkg.github.com
-login YOUR_GITHUB_USERNAME
-password YOUR_PERSONAL_ACCESS_TOKEN
-EOF
-
-# Secure the file
-chmod 600 ~/.netrc
-```
-
-Or create `~/.pip/pip.conf`:
-
-```bash
-mkdir -p ~/.pip
-cat > ~/.pip/pip.conf << EOF
-[global]
-extra-index-url = https://YOUR_GITHUB_USERNAME:YOUR_PERSONAL_ACCESS_TOKEN@pip.pkg.github.com/hoppefamily/
-EOF
-```
-
-## Environment Variable Method (Recommended for CI/CD)
-
-```bash
-# Set environment variable
-export PIP_EXTRA_INDEX_URL=https://YOUR_GITHUB_USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
-
-# Now pip install will work
-pip install flow-state-monitor
-```
-
 ## Installing the Package
 
-Once authenticated, install normally:
+Recommended (pin to a tag):
 
 ```bash
-# Method 1: Using extra-index-url flag
-pip install flow-state-monitor --extra-index-url https://YOUR_USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
-
-# Method 2: After configuring pip.conf (no flags needed)
-pip install flow-state-monitor
-
-# Method 3: Using netrc (no flags needed)
-pip install flow-state-monitor
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
 
-## In requirements.txt
+In `requirements.txt`:
 
-```
-# requirements.txt
-flow-state-monitor==0.1.0
-```
-
-Then install with:
-
-```bash
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+```text
+flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
 ```
 
 ## For GitHub Actions
 
 ```yaml
-- name: Configure pip for GitHub Packages
+- name: Install flow-state-monitor (private repo)
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run: |
-    echo "extra-index-url=https://${{ secrets.GITHUB_TOKEN }}@pip.pkg.github.com/hoppefamily/" >> $HOME/.pip/pip.conf
-
-- name: Install dependencies
-  run: |
-    pip install -r requirements.txt
+    pip install "flow-state-monitor @ git+https://x-access-token:${GITHUB_TOKEN}@github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
 
 ## Security Notes
@@ -98,10 +48,8 @@ pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKE
 
 ## Alternative: Git URL Method
 
-If GitHub Packages authentication is problematic, you can still use:
+You can also install via SSH (common for developers with SSH keys configured):
 
 ```bash
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
+pip install "flow-state-monitor @ git+ssh://git@github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
-
-This uses SSH/HTTPS git authentication instead of package registry authentication.

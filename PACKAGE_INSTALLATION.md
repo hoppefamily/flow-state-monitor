@@ -4,33 +4,30 @@ This document explains how to install and use flow-state-monitor as a private pa
 
 ## For Consumers (e.g., market-flow-dashboard)
 
-### Install from GitHub Packages
+### Install from Git (Recommended)
 
-Install like a regular PyPI package using `--extra-index-url`:
+Install directly from the GitHub repo (pin to a tag for reproducibility):
 
 ```bash
-# Install latest version
-pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+# Recommended: install a tagged version
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 
-# Install specific version
-pip install flow-state-monitor==0.1.0 --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
-
-# With optional dependencies
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+# Development only: track main
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
 ```
 
-**Setup required**: See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for authentication setup.
+**Auth required (private repo):** See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for recommended authentication patterns for local dev and CI.
 
 ### In requirements.txt
 
 ```
 # requirements.txt
-flow-state-monitor==0.1.0
+flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
 ```
 
 Then install with:
 ```bash
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install -r requirements.txt
 ```
 
 ### With Optional Dependencies
@@ -39,19 +36,19 @@ If you need IBKR or Alpaca support:
 
 ```bash
 # Install with Alpaca support
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install "flow-state-monitor[alpaca] @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 
 # Install with IBKR support
-pip install flow-state-monitor[ibkr] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install "flow-state-monitor[ibkr] @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 
 # Install with dev dependencies
-pip install flow-state-monitor[dev] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install "flow-state-monitor[dev] @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
 
 In `requirements.txt`:
 
 ```
-flow-state-monitor[alpaca]==0.1.0
+flow-state-monitor[alpaca] @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
 ```
 
 ## For Package Maintainers
@@ -83,6 +80,8 @@ flow-state-monitor[alpaca]==0.1.0
    - Click "Publish release"
 
 5. The GitHub Actions workflow will automatically build and publish the package
+
+   **Note**: This repo is currently consumed via git tags (VCS installs). There is no GitHub Packages publish step.
 
 ### Manual Package Building
 
@@ -135,7 +134,7 @@ Add to your workflow:
   env:
     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   run: |
-    pip install git+https://${{ secrets.GITHUB_TOKEN }}@github.com/hoppefamily/flow-state-monitor.git@main
+      pip install "flow-state-monitor @ git+https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
 
 The `GITHUB_TOKEN` is automatically available in GitHub Actions.

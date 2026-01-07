@@ -28,10 +28,10 @@ git push origin main --tags
 
 ```bash
 # In requirements.txt
-flow-state-monitor==0.1.0
+flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
 
 # Install with
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install -r requirements.txt
 ```
 
 ## Testing Before Release
@@ -119,5 +119,4 @@ pip install git+https://${GITHUB_TOKEN}@github.com/hoppefamily/flow-state-monito
 - **PRIVATE_PACKAGE_SETUP.md** - Overview and setup summary
 - **PACKAGE_INSTALLATION.md** - Detailed installation guide
 - **README.md** - Main documentation
-- **.github/workflows/publish-package.yml** - Publishing workflow
 - **.github/workflows/build-test.yml** - Testing workflow

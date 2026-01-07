@@ -1,6 +1,6 @@
 # flow-state-monitor - Private Package Setup
 
-This repository is configured as a **private GitHub package** that can be consumed by other projects like `market-flow-dashboard`.
+This repository is consumed as a **private git dependency** that can be installed by other projects like `market-flow-dashboard`.
 
 ## Quick Setup Summary
 
@@ -17,12 +17,12 @@ This repository is configured as a **private GitHub package** that can be consum
 
 In your `requirements.txt`:
 ```
-flow-state-monitor==0.1.0
+flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
 ```
 
 Then install with:
 ```bash
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install -r requirements.txt
 ```
 
 #### As a Maintainer (publishing updates)
@@ -35,26 +35,18 @@ pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKE
 ## Key Files
 
 - **[PACKAGE_INSTALLATION.md](PACKAGE_INSTALLATION.md)** - Complete installation and usage guide
-- **[GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md)** - GitHub Packages authentication setup
+- **[GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md)** - Git authentication setup for private installs
 - **[pyproject.toml](pyproject.toml)** - Package configuration and metadata
-- **[.github/workflows/publish-package.yml](.github/workflows/publish-package.yml)** - Automated publishing
 - **[.github/workflows/build-test.yml](.github/workflows/build-test.yml)** - Automated testing
 
 ## Installation Method
 
-### GitHub Packages
+### Git (Recommended)
 
-Install like a normal PyPI package:
+Install by pinning to a tag:
 
 ```bash
-# With extra-index-url flag
-pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
-
-# Specific version
-pip install flow-state-monitor==0.1.0 --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
-
-# With optional dependencies
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
+pip install "flow-state-monitor @ git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0"
 ```
 
 📖 **See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for authentication setup.**
@@ -79,8 +71,7 @@ To update the version:
 
 ### Publish Package (On Release)
 - Runs on: New GitHub release
-- Action: Builds and publishes package
-- Status: Check `.github/workflows/publish-package.yml`
+- Action: (Optional) create a tag/release for consumers to pin to
 
 ## Consumer Projects
 

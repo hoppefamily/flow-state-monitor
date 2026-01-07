@@ -25,7 +25,9 @@ def test_calculate_momentum_stable():
     rates = [10.0, 10.5, 10.2, 10.3, 10.0]
     momentum = calculate_momentum(rates)
     
-    assert momentum == 0.0
+    # Momentum uses EMA(ΔB) with default span=3.
+    # For this sequence, EMA(deltas) converges to -0.1.
+    assert momentum == pytest.approx(-0.1)
 
 
 def test_positive_momentum():
