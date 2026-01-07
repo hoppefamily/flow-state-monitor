@@ -29,21 +29,11 @@ jobs:
     - name: Build package
       run: python -m build
 
-    - name: Configure pip for GitHub Packages
-      run: |
-        # Create .pypirc for GitHub Packages
-        cat > ~/.pypirc << EOF
-        [distutils]
-        index-servers =
-            github
-
-        [github]
-        repository = https://maven.pkg.github.com/hoppefamily
-        username = __token__
-        password = ${{ secrets.GITHUB_TOKEN }}
-        EOF
-
     - name: Publish to GitHub Packages
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+        TWINE_REPOSITORY_URL: https://maven.pkg.github.com/hoppefamily/
       run: |
         # Publish to GitHub Packages
-        python -m twine upload --repository github dist/*
+        python -m twine upload dist/*
