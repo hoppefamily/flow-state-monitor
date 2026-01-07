@@ -19,7 +19,7 @@ Create or edit `~/.netrc` file:
 
 ```bash
 cat >> ~/.netrc << EOF
-machine maven.pkg.github.com
+machine pip.pkg.github.com
 login YOUR_GITHUB_USERNAME
 password YOUR_PERSONAL_ACCESS_TOKEN
 EOF
@@ -34,7 +34,7 @@ Or create `~/.pip/pip.conf`:
 mkdir -p ~/.pip
 cat > ~/.pip/pip.conf << EOF
 [global]
-extra-index-url = https://YOUR_GITHUB_USERNAME:YOUR_PERSONAL_ACCESS_TOKEN@maven.pkg.github.com/hoppefamily/
+extra-index-url = https://YOUR_GITHUB_USERNAME:YOUR_PERSONAL_ACCESS_TOKEN@pip.pkg.github.com/hoppefamily/
 EOF
 ```
 
@@ -42,7 +42,7 @@ EOF
 
 ```bash
 # Set environment variable
-export PIP_EXTRA_INDEX_URL=https://YOUR_GITHUB_USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+export PIP_EXTRA_INDEX_URL=https://YOUR_GITHUB_USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # Now pip install will work
 pip install flow-state-monitor
@@ -54,7 +54,7 @@ Once authenticated, install normally:
 
 ```bash
 # Method 1: Using extra-index-url flag
-pip install flow-state-monitor --extra-index-url https://YOUR_USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor --extra-index-url https://YOUR_USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # Method 2: After configuring pip.conf (no flags needed)
 pip install flow-state-monitor
@@ -73,7 +73,7 @@ flow-state-monitor==0.1.0
 Then install with:
 
 ```bash
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 ## For GitHub Actions
@@ -81,7 +81,7 @@ pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKE
 ```yaml
 - name: Configure pip for GitHub Packages
   run: |
-    echo "extra-index-url=https://${{ secrets.GITHUB_TOKEN }}@maven.pkg.github.com/hoppefamily/" >> $HOME/.pip/pip.conf
+    echo "extra-index-url=https://${{ secrets.GITHUB_TOKEN }}@pip.pkg.github.com/hoppefamily/" >> $HOME/.pip/pip.conf
 
 - name: Install dependencies
   run: |

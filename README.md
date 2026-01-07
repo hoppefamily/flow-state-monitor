@@ -42,13 +42,13 @@ flow-state-monitor operates in the **Money Flow Domain** - it detects price move
 
 ```bash
 # Install from GitHub Packages
-pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor --extra-index-url https://pip.pkg.github.com/hoppefamily
 
 # Install specific version
-pip install flow-state-monitor==0.1.0 --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor==0.1.0 --extra-index-url https://pip.pkg.github.com/hoppefamily
 
 # With optional dependencies
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor[alpaca] --extra-index-url https://pip.pkg.github.com/hoppefamily
 ```
 
 📦 **Requires authentication setup** - See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md)

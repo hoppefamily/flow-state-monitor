@@ -10,13 +10,13 @@ Install like a regular PyPI package using `--extra-index-url`:
 
 ```bash
 # Install latest version
-pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # Install specific version
-pip install flow-state-monitor==0.1.0 --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor==0.1.0 --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # With optional dependencies
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 **Setup required**: See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for authentication setup.
@@ -30,7 +30,7 @@ flow-state-monitor==0.1.0
 
 Then install with:
 ```bash
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 ### With Optional Dependencies
@@ -39,13 +39,13 @@ If you need IBKR or Alpaca support:
 
 ```bash
 # Install with Alpaca support
-pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # Install with IBKR support
-pip install flow-state-monitor[ibkr] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor[ibkr] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 
 # Install with dev dependencies
-pip install flow-state-monitor[dev] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor[dev] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 In `requirements.txt`:

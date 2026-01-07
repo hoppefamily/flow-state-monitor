@@ -19,7 +19,7 @@ This is the first official release of flow-state-monitor as a private GitHub pac
 
 **Method 1: GitHub Packages**
 ```bash
-pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install flow-state-monitor --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 **Method 2: Git URL**

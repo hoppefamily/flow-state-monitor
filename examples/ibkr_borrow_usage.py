@@ -22,7 +22,7 @@ SNAPSHOT_DIR = './output'  # Path to IBKR Borrow Sensor snapshots
 def main():
     print(f"Fetching {DAYS} days of borrow rate data for {SYMBOL}...")
     print(f"Reading from snapshot directory: {SNAPSHOT_DIR}\n")
-    
+
     # Fetch borrow rates from IBKR Borrow Sensor snapshots
     try:
         borrow_data = fetch_ibkr_borrow_rates(
@@ -40,28 +40,28 @@ def main():
     except Exception as e:
         print(f"Error fetching data: {e}")
         return
-    
+
     print(f"✓ Successfully fetched {len(borrow_data['borrow_rates'])} days of borrow rate data")
     print(f"  Current rate: {borrow_data['borrow_rates'][-1]:.2f}%")
     print(f"  Average rate: {sum(borrow_data['borrow_rates']) / len(borrow_data['borrow_rates']):.2f}%\n")
-    
+
     # Example: Combine with your own price data
     # In a real application, you'd fetch actual price data from your data source
     # Here we'll use dummy data for demonstration
     print("Note: You need to provide price data from another source")
     print("      (e.g., Alpaca, IBKR, CSV file, etc.)\n")
-    
+
     # Dummy price data for demonstration
     # Replace this with actual price data in your application
     dummy_prices = [100 + i * 0.5 for i in range(DAYS)]
-    
+
     # Analyze with flow-state-monitor
     monitor = FlowStateMonitor()
     results = monitor.analyze(
         borrow_rates=borrow_data['borrow_rates'],
         prices=dummy_prices
     )
-    
+
     # Print results
     print("=" * 60)
     print("FLOW STATE ANALYSIS")

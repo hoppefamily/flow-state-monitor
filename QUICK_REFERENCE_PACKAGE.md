@@ -31,7 +31,7 @@ git push origin main --tags
 flow-state-monitor==0.1.0
 
 # Install with
-pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
+pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@pip.pkg.github.com/hoppefamily/
 ```
 
 ## Testing Before Release
