@@ -314,3 +314,55 @@ def fetch_ibkr_data(
     """
     with IBKRDataFetcher(host=host, port=port, client_id=client_id) as fetcher:
         return fetcher.fetch_daily_bars(symbol, days=days, **kwargs)
+
+
+def fetch_combined_data(
+    symbol: str,
+    days: int = 30,
+    ibkr_snapshot_dir: str = './output',
+    ibkr_port: int = 7497,
+    ibkr_host: str = '127.0.0.1',
+    ibkr_client_id: int = 1,
+    **kwargs
+) -> Dict[str, List[float]]:
+    """
+    Fetch combined borrow rates and price data for a symbol.
+
+    Borrow rates come from IBKR Borrow Sensor snapshot files.
+    Price data comes from IBKR TWS/Gateway.
+
+    Args:
+        symbol: Stock ticker symbol
+        days: Number of days to fetch
+        ibkr_snapshot_dir: Directory containing IBKR borrow snapshot JSON files
+        ibkr_port: IBKR TWS/Gateway port
+        ibkr_host: IBKR TWS/Gateway host
+        ibkr_client_id: IBKR client ID
+        **kwargs: Additional arguments
+
+    Returns:
+        Dictionary with 'borrow_rates' and 'prices' lists
+    """
+    from .ibkr_borrow_data import fetch_ibkr_borrow_rates
+
+    # Fetch borrow rates from IBKR Borrow Sensor
+    borrow_data = fetch_ibkr_borrow_rates(
+        symbol=symbol,
+        days=days,
+        snapshot_dir=ibkr_snapshot_dir
+    )
+
+    # Fetch price data from IBKR TWS/Gateway
+    price_data = fetch_ibkr_data(
+        symbol=symbol,
+        days=days,
+        host=ibkr_host,
+        port=ibkr_port,
+        client_id=ibkr_client_id,
+        **kwargs
+    )
+
+    return {
+        "borrow_rates": borrow_data["borrow_rates"],
+        "prices": price_data["prices"]
+    }

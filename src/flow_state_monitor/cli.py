@@ -151,7 +151,7 @@ Environment Variables:
         type=str,
         nargs="?",
         metavar="SYMBOL",
-        help="Stock symbol to monitor (uses Ortex for borrow rates, Alpaca for prices by default)"
+        help="Stock symbol to monitor (uses IBKR Borrow Sensor for borrow rates, Alpaca for prices by default)"
     )
 
     parser.add_argument(
@@ -161,10 +161,10 @@ Environment Variables:
     )
 
     parser.add_argument(
-        "--ortex-api-key",
+        "--ibkr-snapshot-dir",
         type=str,
-        default=None,
-        help="Ortex API key (default: from ORTEX_API_KEY env var, fallback to TEST for demo)"
+        default="./output",
+        help="Directory containing IBKR borrow snapshot JSON files (default: ./output)"
     )
 
     parser.add_argument(
@@ -256,7 +256,7 @@ Environment Variables:
     args = parser.parse_args()
 
     # Get environment variables with defaults
-    ortex_api_key = args.ortex_api_key or os.getenv('ORTEX_API_KEY', 'TEST')
+    ibkr_snapshot_dir = args.ibkr_snapshot_dir or os.getenv('IBKR_SNAPSHOT_DIR', './output')
     alpaca_api_key = args.alpaca_api_key or os.getenv('ALPACA_API_KEY')
     alpaca_secret_key = args.alpaca_secret_key or os.getenv('ALPACA_SECRET_KEY')
     ibkr_port = args.port if args.port is not None else int(os.getenv('IBKR_PORT', '7497'))
@@ -321,18 +321,18 @@ Environment Variables:
                 price_col=args.price_col
             )
         elif has_symbol:
-            # Symbol mode: Ortex for borrow rates, Alpaca/IBKR/CSV for prices
+            # Symbol mode: IBKR Borrow Sensor for borrow rates, Alpaca/IBKR/CSV for prices
             if args.price_csv:
-                # Fetch borrow rates from Ortex, prices from CSV
+                # Fetch borrow rates from IBKR Borrow Sensor, prices from CSV
                 if not args.json:
-                    print(f"Fetching {args.days} days of {args.symbol} borrow rates from Ortex...")
+                    print(f"Fetching {args.days} days of {args.symbol} borrow rates from IBKR Borrow Sensor...")
 
                 try:
-                    from .ortex_data import fetch_ortex_borrow_rates
-                    borrow_data = fetch_ortex_borrow_rates(
+                    from .ibkr_borrow_data import fetch_ibkr_borrow_rates
+                    borrow_data = fetch_ibkr_borrow_rates(
                         symbol=args.symbol,
                         days=args.days,
-                        api_key=ortex_api_key
+                        snapshot_dir=ibkr_snapshot_dir
                     )
 
                     # Load prices from CSV
@@ -358,16 +358,16 @@ Environment Variables:
                         print(f"Error fetching data: {e}", file=sys.stderr)
                     sys.exit(3)
             elif args.use_ibkr:
-                # Fetch both borrow rates from Ortex and prices from IBKR
+                # Fetch borrow rates from IBKR Borrow Sensor and prices from IBKR
                 if not args.json:
-                    print(f"Fetching data for {args.symbol} from Ortex and IBKR...")
+                    print(f"Fetching data for {args.symbol} from IBKR Borrow Sensor and IBKR...")
 
                 try:
                     from .ibkr_data import fetch_combined_data
                     data = fetch_combined_data(
                         symbol=args.symbol,
                         days=args.days,
-                        ortex_api_key=ortex_api_key,
+                        ibkr_snapshot_dir=ibkr_snapshot_dir,
                         ibkr_port=ibkr_port,
                         ibkr_host=ibkr_host,
                         ibkr_client_id=args.client_id
@@ -381,16 +381,16 @@ Environment Variables:
                         print(f"Error fetching data: {e}", file=sys.stderr)
                     sys.exit(3)
             else:
-                # Default mode: Fetch both borrow rates from Ortex and prices from Alpaca
+                # Default mode: Fetch borrow rates from IBKR Borrow Sensor and prices from Alpaca
                 if not args.json:
-                    print(f"Fetching data for {args.symbol} from Ortex and Alpaca...")
+                    print(f"Fetching data for {args.symbol} from IBKR Borrow Sensor and Alpaca...")
 
                 try:
                     from .alpaca_data import fetch_combined_data
                     data = fetch_combined_data(
                         symbol=args.symbol,
                         days=args.days,
-                        ortex_api_key=ortex_api_key,
+                        ibkr_snapshot_dir=ibkr_snapshot_dir,
                         alpaca_api_key=alpaca_api_key,
                         alpaca_secret_key=alpaca_secret_key,
                         paper=True

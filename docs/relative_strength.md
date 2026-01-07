@@ -7,8 +7,8 @@ The relative strength analysis feature automatically compares a stock's performa
 ## When It's Available
 
 **✅ Available:**
-- Default mode: `flow-state-monitor AAPL` (Ortex + Alpaca)
-- IBKR mode: `flow-state-monitor AAPL --use-ibkr` (Ortex + IBKR)
+- Default mode: `flow-state-monitor AAPL` (IBKR Borrow Sensor + Alpaca)
+- IBKR mode: `flow-state-monitor AAPL --use-ibkr` (IBKR Borrow Sensor + IBKR)
 
 **❌ Not Available:**
 - CSV mode: `flow-state-monitor --csv data.csv` (no symbol/fetcher)

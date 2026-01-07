@@ -14,10 +14,10 @@ A Python tool that monitors market flow states driven by forced buying pressure 
 - **Modular Design**: Each detection method is independent and can be used separately
 - **Config-Driven**: Easily customize detection thresholds via YAML configuration
 - **CLI Support**: Command-line interface for analyzing CSV data files
-- **Ortex Integration**: Fetch borrow rate data directly from Ortex API
+- **IBKR Borrow Sensor Integration**: Fetch borrow rate data from IBKR Borrow Sensor snapshot files
 - **Alpaca Integration**: Fetch price data from Alpaca Markets (default, easier than IBKR)
 - **IBKR Integration**: Optional support for fetching price data from Interactive Brokers/CapTrader
-- **Complete Solution**: Combine Ortex (borrow rates) + Alpaca (prices) for fully automated data fetching
+- **Complete Solution**: Combine IBKR Borrow Sensor (borrow rates) + Alpaca (prices) for fully automated data fetching
 - **Relative Strength Analysis**: Compare stock performance against SPY and QQQ benchmarks to validate signals
 - **Flow State Output**: Returns ON / WEAKENING / OFF states (not trade signals)
 
@@ -79,7 +79,7 @@ pip install ib_insync
 pip install -e ".[dev]"
 ```
 
-**Note**: Ortex integration requires no additional packages - just an API key!
+**Note**: IBKR Borrow Sensor integration reads JSON snapshots from local files - no API key needed!
 **Note**: Alpaca is the recommended price data source (easier setup than IBKR).
 
 ## Quick Start
@@ -89,14 +89,14 @@ pip install -e ".[dev]"
 Create a `.env` file or set environment variables:
 
 ```bash
-# Ortex API key (get from https://public.ortex.com/, use 'TEST' for demo)
-export ORTEX_API_KEY=your_api_key_here
+# IBKR Borrow Sensor snapshot directory (default: ./output)
+export IBKR_SNAPSHOT_DIR=./output
 
 # Alpaca API credentials (get free keys from https://alpaca.markets/)
 export ALPACA_API_KEY=your_alpaca_key
 export ALPACA_SECRET_KEY=your_alpaca_secret
 
-# Optional: IBKR configuration (only if using --use-ibkr)
+# Optional: IBKR configuration (only if using --use-ibkr for price data)
 export IBKR_PORT=7497
 export IBKR_HOST=127.0.0.1
 ```
@@ -106,7 +106,7 @@ See [.env.example](.env.example) for a template.
 ### Command Line
 
 ```bash
-# Default mode: Fetch from Ortex + Alpaca (easiest!)
+# Default mode: Fetch from IBKR Borrow Sensor + Alpaca (easiest!)
 flow-state-monitor AAPL
 
 # With explicit days parameter
@@ -118,14 +118,14 @@ flow-state-monitor AAPL --use-ibkr
 # Analyze data from CSV file
 flow-state-monitor --csv examples/flow_on_example.csv
 
-# Fetch borrow rates from Ortex + prices from CSV (no relative strength)
+# Fetch borrow rates from IBKR Borrow Sensor + prices from CSV (no relative strength)
 flow-state-monitor AAPL --price-csv prices.csv
 
-# Override API keys from environment
-flow-state-monitor AAPL --ortex-api-key YOUR_KEY --alpaca-api-key YOUR_KEY
+# Specify custom snapshot directory
+flow-state-monitor AAPL --ibkr-snapshot-dir /path/to/snapshots
 
-# Use Ortex demo key for testing
-flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
+# Override API keys from environment
+flow-state-monitor AAPL --alpaca-api-key YOUR_KEY --alpaca-secret-key YOUR_SECRET
 
 # Use custom configuration
 flow-state-monitor AAPL --config custom_config.yaml
@@ -156,7 +156,7 @@ AAPL: +15.25% | vs SPY (+8.45%): outperforming by +6.80% | vs QQQ (+10.22%): out
 ============================================================
 ```
 
-**Note**: When using live data sources (Ortex + Alpaca/IBKR), relative strength analysis is automatically included. It compares the stock's performance against SPY (S&P 500) and QQQ (Nasdaq-100) benchmarks to help validate the flow signal. A strong flow signal with underperformance vs benchmarks may indicate a weak or false signal. Relative strength is not available when using CSV files for price data.
+**Note**: When using live data sources (IBKR Borrow Sensor + Alpaca/IBKR), relative strength analysis is automatically included. It compares the stock's performance against SPY (S&P 500) and QQQ (Nasdaq-100) benchmarks to help validate the flow signal. A strong flow signal with underperformance vs benchmarks may indicate a weak or false signal. Relative strength is not available when using CSV files for price data.
 
 **Exit codes:**
 - 0 = OFF (no pressure)
@@ -339,29 +339,65 @@ flow-state-monitor --ibkr AAPL --days 30 --port 7497 --borrow-csv borrow.csv
 
 See [IBKR_QUICK_REFERENCE.md](IBKR_QUICK_REFERENCE.md) for complete setup instructions and examples.
 
-## Ortex Integration
+## IBKR Borrow Sensor Integration
 
-The flow-state-monitor supports fetching borrow rate data from Ortex API. Combined with IBKR for prices, this provides a complete automated solution!
+The flow-state-monitor integrates with IBKR Borrow Sensor to fetch borrow rate data from snapshot files. The IBKR Borrow Sensor is a separate tool that collects and exports borrow rate data from Interactive Brokers to JSON files.
 
-**Sign up**: https://public.ortex.com/
-**Demo Key**: Use `TEST` for testing (limited data)
+**Repository**: https://github.com/hoppefamily/ibkr-borrow-sensor
 
 ### Setup
 
-No additional Python packages needed - just get an API key!
+1. **Install and run IBKR Borrow Sensor** (in a separate project):
+   ```bash
+   cd /path/to/ibkr-borrow-sensor
+   npm install
+   npm run demo  # Or set up scheduled collection
+   ```
+
+2. **Snapshot files are created** in `./output/` directory:
+   - `borrow-state-AAPL-latest.json`
+   - `borrow-state-TSLA-latest.json`
+   - etc.
+
+3. **Point flow-state-monitor to the snapshot directory**:
+   ```bash
+   export IBKR_SNAPSHOT_DIR=/path/to/ibkr-borrow-sensor/output
+   ```
+
+### Snapshot File Format
+
+```json
+{
+  "symbol": "AAPL",
+  "availability": 150000,
+  "rate": "MEDIUM",
+  "changeDirection": "up",
+  "timestamp": "2024-01-15T10:30:00Z"
+}
+```
+
+Rate buckets are mapped to percentages:
+- `VERY_LOW` → 0.5%
+- `LOW` → 2%
+- `MEDIUM` → 5%
+- `HIGH` → 10%
+- `VERY_HIGH` → 25%
+- `EXTREME` → 50%
 
 ### Python API
 
 ```python
 from flow_state_monitor import FlowStateMonitor
-from flow_state_monitor.ortex_data import fetch_combined_data
+from flow_state_monitor.alpaca_data import fetch_combined_data
 
-# Fetch BOTH borrow rates (Ortex) and prices (IBKR) - complete solution!
+# Fetch BOTH borrow rates (IBKR Borrow Sensor) and prices (Alpaca) - complete solution!
 data = fetch_combined_data(
     symbol='AAPL',
     days=30,
-    ortex_api_key='YOUR_KEY',  # or 'TEST' for demo
-    ibkr_port=7497
+    ibkr_snapshot_dir='./output',  # Path to IBKR Borrow Sensor snapshots
+    alpaca_api_key='YOUR_KEY',
+    alpaca_secret_key='YOUR_SECRET',
+    paper=True
 )
 
 # Analyze
@@ -373,10 +409,10 @@ print(results['summary'])
 ### Or Fetch Only Borrow Rates
 
 ```python
-from flow_state_monitor.ortex_data import fetch_ortex_borrow_rates
+from flow_state_monitor.ibkr_borrow_data import fetch_ibkr_borrow_rates
 
-# Fetch borrow rates from Ortex
-borrow_data = fetch_ortex_borrow_rates('AAPL', days=30, api_key='YOUR_KEY')
+# Fetch borrow rates from IBKR Borrow Sensor snapshots
+borrow_data = fetch_ibkr_borrow_rates('AAPL', days=30, snapshot_dir='./output')
 
 # Combine with your price data
 monitor = FlowStateMonitor()
@@ -389,20 +425,20 @@ results = monitor.analyze(
 ### Command Line
 
 ```bash
-# Default mode: Ortex + Alpaca (uses env vars)
+# Default mode: IBKR Borrow Sensor + Alpaca (uses env vars)
 flow-state-monitor AAPL --days 30
 
-# Override API keys
-flow-state-monitor AAPL --ortex-api-key YOUR_KEY --alpaca-api-key YOUR_KEY
+# Specify custom snapshot directory
+flow-state-monitor AAPL --ibkr-snapshot-dir /path/to/snapshots
 
-# Ortex + CSV prices
-flow-state-monitor AAPL --price-csv prices.csv
+# IBKR Borrow Sensor + CSV prices
+flow-state-monitor AAPL --price-csv prices.csv --ibkr-snapshot-dir ./output
 
-# Using demo key
-flow-state-monitor AAPL --ortex-api-key TEST --price-csv prices.csv
+# IBKR Borrow Sensor + IBKR prices
+flow-state-monitor AAPL --use-ibkr --ibkr-snapshot-dir ./output
 ```
 
-See [ORTEX_QUICK_REFERENCE.md](ORTEX_QUICK_REFERENCE.md) for complete setup instructions and examples.
+**Note**: Since IBKR Borrow Sensor provides point-in-time snapshots (not historical data), flow-state-monitor repeats the current rate for the requested number of days. For historical analysis, you'll need to maintain your own time-series database.
 
 ## Testing
 

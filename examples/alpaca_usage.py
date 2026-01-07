@@ -2,7 +2,7 @@
 Example: Using Alpaca Markets data with flow state monitor.
 
 This example demonstrates how to fetch price data from Alpaca Markets
-and combine it with Ortex borrow rate data for complete flow state analysis.
+and combine it with IBKR Borrow Sensor borrow rate data for complete flow state analysis.
 
 Prerequisites:
     1. Install alpaca-py: pip install alpaca-py
@@ -11,7 +11,7 @@ Prerequisites:
     4. Set environment variables or pass keys directly:
        export ALPACA_API_KEY="your_api_key"
        export ALPACA_SECRET_KEY="your_secret_key"
-       export ORTEX_API_KEY="your_ortex_key"
+       export IBKR_SNAPSHOT_DIR="./output"
 
 Note: Alpaca only supports US equities. No forex, futures, or international stocks.
 """
@@ -59,15 +59,15 @@ def example_simple_fetch():
 
 def example_complete_solution():
     """
-    Complete solution: Fetch both borrow rates from Ortex and prices from Alpaca.
+    Complete solution: Fetch both borrow rates from IBKR Borrow Sensor and prices from Alpaca.
     """
     print("\n" + "=" * 70)
-    print("EXAMPLE 2: Complete Solution - Ortex + Alpaca")
+    print("EXAMPLE 2: Complete Solution - IBKR Borrow Sensor + Alpaca")
     print("=" * 70)
 
     try:
         # Fetch everything from APIs
-        print("\nFetching data for AAPL from Ortex and Alpaca...")
+        print("\nFetching data for AAPL from IBKR Borrow Sensor and Alpaca...")
         data = fetch_combined_data(
             symbol='AAPL',
             days=30,
@@ -87,7 +87,7 @@ def example_complete_solution():
 
     except Exception as e:
         print(f"Error: {e}")
-        print("\nMake sure you have set ORTEX_API_KEY, ALPACA_API_KEY,")
+        print("\nMake sure you have set IBKR_SNAPSHOT_DIR, ALPACA_API_KEY,")
         print("and ALPACA_SECRET_KEY environment variables.")
 
 

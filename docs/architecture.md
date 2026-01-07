@@ -86,14 +86,14 @@ print(result['summary'])        # Full formatted output
 ### CLI
 
 ```bash
-# With Ortex API (live data)
-flow-state-monitor --ortex AAPL --ortex-api-key YOUR_KEY --ibkr AAPL
+# With IBKR Borrow Sensor snapshots (live data)
+flow-state-monitor AAPL --ibkr-snapshot-dir ./output
 
 # With CSV files
 flow-state-monitor --borrow-csv borrow.csv --price-csv prices.csv
 
-# With TEST demo key
-flow-state-monitor --ortex AAPL --ortex-api-key TEST --price-csv prices.csv
+# With IBKR for prices
+flow-state-monitor AAPL --use-ibkr --ibkr-snapshot-dir ./output
 ```
 
 ### Output Example

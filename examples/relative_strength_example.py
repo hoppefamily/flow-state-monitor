@@ -5,7 +5,7 @@ This example demonstrates the automatic relative strength comparison
 against SPY and QQQ benchmarks when using live data sources.
 """
 
-# When using live data (Ortex + Alpaca/IBKR), relative strength is automatic!
+# When using live data (IBKR Borrow Sensor + Alpaca/IBKR), relative strength is automatic!
 # Just run the command and you'll get:
 # 1. Flow state analysis (ON/OFF/WEAKENING)
 # 2. Relative strength vs SPY (S&P 500)
@@ -39,7 +39,7 @@ from flow_state_monitor.alpaca_data import fetch_combined_data
 from flow_state_monitor.market_context import MarketContextAnalyzer
 
 # Set up credentials
-ortex_key = os.getenv('ORTEX_API_KEY', 'TEST')
+snapshot_dir = os.getenv('IBKR_SNAPSHOT_DIR', './output')
 alpaca_key = os.getenv('ALPACA_API_KEY')
 alpaca_secret = os.getenv('ALPACA_SECRET_KEY')
 
@@ -48,7 +48,7 @@ if alpaca_key and alpaca_secret:
     data = fetch_combined_data(
         symbol='AAPL',
         days=25,
-        ortex_api_key=ortex_key,
+        ibkr_snapshot_dir=snapshot_dir,
         alpaca_api_key=alpaca_key,
         alpaca_secret_key=alpaca_secret,
         paper=True

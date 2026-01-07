@@ -37,7 +37,7 @@ MONEY FLOW DOMAIN          |  NARRATIVE FLOW DOMAIN
 ### Perfect Example: Berkshire Hathaway (BRK.B)
 
 ```bash
-$ flow-state-monitor BRK.B  # Using real Ortex API key
+$ flow-state-monitor BRK.B  # Using IBKR Borrow Sensor snapshots
 
 MARKET STATE: OFF
 FLOW STATE: OFF
@@ -48,8 +48,6 @@ BRK.B: -2.84%
 vs SPY: underperforming by -3.38%
 vs QQQ: underperforming by -2.64%
 ```
-
-**⚠️ Note:** The example above shows expected behavior with **real Ortex data**. The `ORTEX_API_KEY=TEST` demo key returns **synthetic data** and may incorrectly show Flow ON for BRK.B. In reality, Berkshire **never** has significant short interest or borrow pressure.
 
 **Analysis:**
 - ✅ **Correctly identifies**: No money flow pressure (low borrow rate, no shorts)

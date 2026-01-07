@@ -41,7 +41,7 @@ class AlpacaDataFetcher:
         >>> # Use with monitor
         >>> from flow_state_monitor import FlowStateMonitor
         >>> monitor = FlowStateMonitor()
-        >>> # Combine with borrow rate data from Ortex
+        >>> # Combine with borrow rate data from IBKR Borrow Sensor
         >>> results = monitor.analyze(borrow_rates=borrow_data, prices=data['prices'])
     """
 
@@ -289,18 +289,18 @@ def fetch_alpaca_prices(
 def fetch_combined_data(
     symbol: str,
     days: int = 30,
-    ortex_api_key: str = None,
+    ibkr_snapshot_dir: str = './output',
     alpaca_api_key: Optional[str] = None,
     alpaca_secret_key: Optional[str] = None,
     paper: bool = True
 ) -> Dict[str, List[float]]:
     """
-    Fetch both borrow rates from Ortex and prices from Alpaca.
+    Fetch both borrow rates from IBKR Borrow Sensor and prices from Alpaca.
 
     Args:
         symbol: Stock ticker symbol (US equities only)
         days: Number of days of data to fetch
-        ortex_api_key: Ortex API key (or set ORTEX_API_KEY env var)
+        ibkr_snapshot_dir: Path to ibkr-borrow-sensor output directory
         alpaca_api_key: Alpaca API key (or set ALPACA_API_KEY env var)
         alpaca_secret_key: Alpaca secret key (or set ALPACA_SECRET_KEY env var)
         paper: Use Alpaca paper trading endpoint (default: True)
@@ -309,14 +309,14 @@ def fetch_combined_data(
         Dictionary with 'borrow_rates' and 'prices' keys
     """
     try:
-        from .ortex_data import fetch_ortex_borrow_rates
+        from .ibkr_borrow_data import fetch_ibkr_borrow_rates
     except ImportError:
-        raise ImportError("Ortex data module is required.")
+        raise ImportError("IBKR borrow data module is required.")
 
-    borrow_data = fetch_ortex_borrow_rates(
+    borrow_data = fetch_ibkr_borrow_rates(
         symbol=symbol,
         days=days,
-        api_key=ortex_api_key
+        snapshot_dir=ibkr_snapshot_dir
     )
 
     price_data = fetch_alpaca_prices(
