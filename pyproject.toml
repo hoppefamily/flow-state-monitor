@@ -5,12 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "flow-state-monitor"
 version = "0.1.0"
-description = "A tool to monitor flow states in financial markets"
+description = "A tool to monitor flow states in financial markets (Private Package)"
 readme = "README.md"
 license = {text = "GPL-3.0"}
 authors = [
     {name = "flow-state-monitor contributors"}
 ]
+repository = "https://github.com/hoppefamily/flow-state-monitor"
 requires-python = ">=3.8"
 dependencies = [
     "pyyaml>=6.0",
