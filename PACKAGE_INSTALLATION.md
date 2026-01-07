@@ -4,7 +4,7 @@ This document explains how to install and use flow-state-monitor as a private pa
 
 ## For Consumers (e.g., market-flow-dashboard)
 
-### Method 1: Install from GitHub Packages (Recommended)
+### Install from GitHub Packages
 
 Install like a regular PyPI package using `--extra-index-url`:
 
@@ -21,36 +21,7 @@ pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITH
 
 **Setup required**: See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for authentication setup.
 
-### Method 2: Install from Git Repository (Simpler Authentication)
-
-Since this is a private repository, the easiest way to install it is directly from GitHub:
-
-```bash
-# Install from main branch
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
-
-# Install from a specific version tag
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
-
-# Install from a specific branch
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@feature/relative-strength-analysis
-```
-
-### Method 2: Install with GitHub Token (For CI/CD)
-
-For automated deployments or CI/CD pipelines, use a GitHub Personal Access Token:
-
-```bash
-# Set token as environment variable
-export GITHUB_TOKEN=your_personal_access_token
-
-# Install with authentication
-pip install git+https://${GITHUB_TOKEN}@github.com/hoppefamily/flow-state-monitor.git@main
-```
-
 ### In requirements.txt
-
-**Method 1: GitHub Packages (cleaner, version pinning)**
 
 ```
 # requirements.txt
@@ -62,35 +33,25 @@ Then install with:
 pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
 ```
 
-**Method 2: Git URL (simpler auth)**
-
-```
-# flow-state-monitor from GitHub
-git+https://github.com/hoppefamily/flow-state-monitor.git@main
-
-# Or pinned version
-git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
-```
-
 ### With Optional Dependencies
 
 If you need IBKR or Alpaca support:
 
 ```bash
 # Install with Alpaca support
-pip install "flow-state-monitor[alpaca] @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
+pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
 
 # Install with IBKR support
-pip install "flow-state-monitor[ibkr] @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
+pip install flow-state-monitor[ibkr] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
 
 # Install with dev dependencies
-pip install "flow-state-monitor[dev] @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
+pip install flow-state-monitor[dev] --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
 ```
 
 In `requirements.txt`:
 
 ```
-flow-state-monitor[alpaca] @ git+https://github.com/hoppefamily/flow-state-monitor.git@main
+flow-state-monitor[alpaca]==0.1.0
 ```
 
 ## For Package Maintainers

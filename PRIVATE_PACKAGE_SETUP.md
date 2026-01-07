@@ -17,12 +17,12 @@ This repository is configured as a **private GitHub package** that can be consum
 
 In your `requirements.txt`:
 ```
-git+https://github.com/hoppefamily/flow-state-monitor.git@main
+flow-state-monitor==0.1.0
 ```
 
-Or install directly:
+Then install with:
 ```bash
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
+pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
 ```
 
 #### As a Maintainer (publishing updates)
@@ -40,9 +40,9 @@ pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
 - **[.github/workflows/publish-package.yml](.github/workflows/publish-package.yml)** - Automated publishing
 - **[.github/workflows/build-test.yml](.github/workflows/build-test.yml)** - Automated testing
 
-## Installation Methods
+## Installation Method
 
-### Method 1: GitHub Packages (Recommended)
+### GitHub Packages
 
 Install like a normal PyPI package:
 
@@ -58,19 +58,6 @@ pip install flow-state-monitor[alpaca] --extra-index-url https://USERNAME:${GITH
 ```
 
 📖 **See [GITHUB_PACKAGES_AUTH.md](GITHUB_PACKAGES_AUTH.md) for authentication setup.**
-
-### Method 2: Direct from Git (Simpler Auth)
-
-```bash
-# Latest from main branch
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
-
-# Specific version tag
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
-
-# With optional dependencies
-pip install "flow-state-monitor[alpaca] @ git+https://github.com/hoppefamily/flow-state-monitor.git@main"
-```
 
 ## Version Management
 

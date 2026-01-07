@@ -26,27 +26,12 @@ git push origin main --tags
 
 ## Installing in Other Projects
 
-**Method 1: GitHub Packages (Recommended)**
-
 ```bash
 # In requirements.txt
 flow-state-monitor==0.1.0
 
 # Install with
 pip install -r requirements.txt --extra-index-url https://USERNAME:${GITHUB_TOKEN}@maven.pkg.github.com/hoppefamily/
-```
-
-**Method 2: Git URL**
-
-```bash
-# In requirements.txt
-git+https://github.com/hoppefamily/flow-state-monitor.git@main
-
-# Or specific version
-git+https://github.com/hoppefamily/flow-state-monitor.git@v0.1.0
-
-# Install locally
-pip install git+https://github.com/hoppefamily/flow-state-monitor.git@main
 ```
 
 ## Testing Before Release
