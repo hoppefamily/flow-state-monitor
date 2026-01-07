@@ -107,8 +107,8 @@ class AlpacaDataFetcher:
             first_three = symbol_upper[:3]
             last_three = symbol_upper[3:]
             # Both parts must be currencies AND different to be a forex pair
-            if (first_three in common_currencies and 
-                last_three in common_currencies and 
+            if (first_three in common_currencies and
+                last_three in common_currencies and
                 first_three != last_three):
                 raise ValueError(
                     f"Symbol '{symbol}' appears to be a forex pair ({first_three}/{last_three}). "

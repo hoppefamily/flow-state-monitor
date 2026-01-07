@@ -44,7 +44,7 @@ class OrtexDataFetcher:
         >>> results = monitor.analyze(borrow_rates=data['borrow_rates'], prices=prices)
     """
 
-    BASE_URL = "https://public-api.ortex.com/v1"
+    BASE_URL = "https://api.ortex.com/api/v1"
 
     def __init__(self, api_key: str):
         """
@@ -78,8 +78,8 @@ class OrtexDataFetcher:
 
         # Create request with API key header
         headers = {
-            'Authorization': f'Bearer {self.api_key}',
-            'Accept': 'application/json'
+            'Ortex-Api-Key': self.api_key,
+            'Accept': '*/*'
         }
 
         request = Request(url, headers=headers)
@@ -89,15 +89,21 @@ class OrtexDataFetcher:
                 data = response.read()
                 return json.loads(data.decode('utf-8'))
         except HTTPError as e:
+            error_body = ""
+            try:
+                error_body = e.read().decode('utf-8')
+            except:
+                pass
+
             if e.code == 401:
                 raise ConnectionError(
-                    "Ortex API authentication failed. "
-                    "Check your API key or use 'TEST' for demo access."
+                    f"Ortex API authentication failed. "
+                    f"Check your API key or use 'TEST' for demo access. Details: {error_body}"
                 )
             elif e.code == 403:
                 raise ConnectionError(
-                    "Ortex API access forbidden. "
-                    "Your API key may not have the required permissions."
+                    f"Ortex API access forbidden. "
+                    f"Your API key may not have the required permissions. Details: {error_body}"
                 )
             elif e.code == 429:
                 raise ConnectionError(
@@ -105,7 +111,7 @@ class OrtexDataFetcher:
                     "Wait a moment and try again, or upgrade your API plan."
                 )
             else:
-                raise ConnectionError(f"Ortex API request failed: {e.code} {e.reason}")
+                raise ConnectionError(f"Ortex API request failed: {e.code} {e.reason}. Details: {error_body}")
         except URLError as e:
             raise ConnectionError(f"Failed to connect to Ortex API: {str(e.reason)}")
         except Exception as e:
@@ -156,11 +162,11 @@ class OrtexDataFetcher:
         start_str = start_date.strftime('%Y-%m-%d')
         end_str = end_date.strftime('%Y-%m-%d')
 
-        # Ortex API endpoint for short interest (includes borrow rates)
-        endpoint = f"/stocks/{symbol.upper()}/short-interest"
+        # Ortex API endpoint for Cost To Borrow data
+        # Format: /stock/{exchange_symbol}/{ticker}/ctb/all
+        endpoint = f"/stock/US/{symbol.upper()}/ctb/all"
         params = {
-            'start_date': start_str,
-            'end_date': end_str
+            'format': 'json'
         }
 
         try:
@@ -171,26 +177,23 @@ class OrtexDataFetcher:
             raise ValueError(f"Failed to fetch data for {symbol}: {str(e)}")
 
         # Parse response
-        if 'data' not in response or not response['data']:
+        # Ortex CTB response format: { "rows": [{"date": "YYYY-MM-DD", "costToBorrowAll": X.XX}, ...] }
+        if 'rows' not in response or not response['rows']:
             raise ValueError(
                 f"No borrow rate data available for {symbol}. "
                 f"Symbol may not be tracked by Ortex or data unavailable for date range."
             )
 
         # Extract borrow rates from response
-        # Ortex typically returns: { "data": [{"date": "...", "borrow_rate": ...}, ...] }
-        data_points = response['data']
+        data_points = response['rows']
 
         borrow_rates = []
         for point in data_points:
-            if 'borrow_rate' in point:
-                # Borrow rates in Ortex are typically in percentage
-                borrow_rates.append(float(point['borrow_rate']))
-            elif 'borrow_fee' in point:
-                # Alternative field name
-                borrow_rates.append(float(point['borrow_fee']))
+            # costToBorrowAll is returned as annual percentage rate
+            if 'costToBorrowAll' in point:
+                borrow_rates.append(float(point['costToBorrowAll']))
             else:
-                # If no borrow rate field, skip this data point
+                # Skip data points without CTB value
                 continue
 
         if not borrow_rates:
@@ -198,6 +201,11 @@ class OrtexDataFetcher:
                 f"No borrow rate data found in Ortex response for {symbol}. "
                 f"The symbol may not have borrow rate information available."
             )
+
+        # Filter to requested date range if needed
+        # (API might return more data than requested)
+        if len(borrow_rates) > days:
+            borrow_rates = borrow_rates[-days:]
 
         return {
             'borrow_rates': borrow_rates
