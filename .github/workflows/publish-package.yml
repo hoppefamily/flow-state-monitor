@@ -46,4 +46,4 @@ jobs:
     - name: Publish to GitHub Packages
       run: |
         # Publish to GitHub Packages
-        python -m twine upload --repository github --skip-existing dist/*
+        python -m twine upload --repository github dist/*
