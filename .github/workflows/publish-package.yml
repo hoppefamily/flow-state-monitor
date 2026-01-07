@@ -35,7 +35,7 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.GH_PACKAGES_TOKEN }}
       run: |
         # Publish to GitHub Packages Python registry
-        # Upload to GitHub API endpoint, install from pip.pkg.github.com
+        # Upload endpoint for GitHub Packages
         python -m twine upload \
-          --repository-url https://api.github.com/orgs/hoppefamily/packages/pypi/upload \
+          --repository-url https://upload.github.com/orgs/hoppefamily/pypi/ \
           dist/*
