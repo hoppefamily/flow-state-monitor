@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "flow-state-monitor"
-version = "0.1.0"
+version = "0.1.1"
 description = "A tool to monitor flow states in financial markets (Private Package)"
 readme = "README.md"
 license = {text = "GPL-3.0"}
